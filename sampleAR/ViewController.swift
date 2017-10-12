@@ -7,12 +7,21 @@
 //
 
 import UIKit
+import ARKit
+
 
 class ViewController: UIViewController {
 
+    @IBOutlet weak var sceneView: ARSCNView!
+    let configration = ARWorldTrackingConfiguration()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, ARSCNDebugOptions.showWorldOrigin]
+        self.sceneView.session.run(configration)
+        self.sceneView.autoenablesDefaultLighting = true
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -20,6 +29,61 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-
+    @IBAction func addButton(_ sender: UIButton) {
+        
+        let node = SCNNode()
+        
+        //Box Node
+        node.geometry = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0.05)
+        let x = randomNumbers(firstNum: -0.3, secondNum: 0.3)
+        let y = randomNumbers(firstNum: -0.3, secondNum: 0.3)
+        let z = randomNumbers(firstNum: -0.3, secondNum: 0.3)
+        
+        node.geometry?.firstMaterial?.specular.contents = UIColor.black
+        node.geometry?.firstMaterial?.diffuse.contents = UIColor.yellow
+        node.position = SCNVector3(x,y,z)
+        
+        self.sceneView.scene.rootNode.addChildNode(node)
+        
+    }
+    
+    @IBAction func resetButton(_ sender: UIButton) {
+        resetSession()
+    }
+    
+    func resetSession(){
+        self.sceneView.session.pause()
+        self.sceneView.scene.rootNode.enumerateChildNodes{(node, _) in node.removeFromParentNode()
+        }
+        
+        self.sceneView.session.run(configration, options: [.resetTracking, .removeExistingAnchors])
+    }
+    
+    
+    
+    
+    
+    
+    func randomNumbers(firstNum: CGFloat, secondNum: CGFloat) -> CGFloat {
+        return CGFloat(arc4random()) / CGFloat(UINT32_MAX) * abs(firstNum - secondNum) + min(firstNum, secondNum)
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
 
